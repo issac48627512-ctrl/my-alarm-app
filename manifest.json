@@ -1,0 +1,8 @@
+{
+  "name": "地盤安全警報控制台",
+  "short_name": "安全警報",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#222222",
+  "theme_color": "#ffcc00"
+}
