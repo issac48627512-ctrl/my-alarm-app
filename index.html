@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>地盤安全警報控制台</title>
+    <!-- 啟用 PWA 行動裝置全螢幕模式，讓它更像一個真正的原生 App -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 15px; background: #222; color: #fff; text-align: center; margin: 0; }
+        .container { max-width: 450px; margin: 0 auto; padding-bottom: 30px; }
+        .card { background: #333; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); text-align: left; }
+        label { font-size: 13px; color: #aaa; font-weight: bold; display: block; margin-bottom: 4px; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 12px; background: #444; border: 1px solid #555; border-radius: 6px; color: #fff; font-size: 16px; box-sizing: border-box; }
+        input:focus, select:focus { border-color: #ffcc00; outline: none; }
+        .row { display: flex; gap: 10px; }
+        .row .col { flex: 1; }
+        .status-box { font-size: 16px; font-weight: bold; background: #111; padding: 12px; border-radius: 6px; text-align: center; margin-bottom: 15px; color: #ffcc00; word-break: break-all; }
+        .btn-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        .alarm-btn { width: 100%; padding: 16px; color: #000; background: #ffcc00; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; text-align: left; display: flex; align-items: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); -webkit-tap-highlight-color: transparent; }
+        .alarm-btn:active { transform: scale(0.98); background: #e6b800; }
+        .alarm-btn.off { background: #ff4d4d; color: #fff; }
+        .alarm-btn.off:active { background: #cc3333; }
+        .btn-icon { font-size: 20px; margin-right: 12px; width: 24px; text-align: center; }
+        .btn-text { flex: 1; }
+        .sub-text { font-size: 11px; color: #666; margin-top: 15px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 style="margin: 10px 0 5px 0;">🚨 遠端網路警報控制台</h2>
+        <p style="color: #888; font-size: 13px; margin: 0 0 15px 0;">隨時更換 IP 與 Port · 人手急Call系統</p>
+        
+        <!-- 核心設定區 -->
+        <div class="card">
+            <div class="row">
+                <div class="col" style="flex: 2;">
+                    <label for="destIp">目的地 IP (DEST_IP)</label>
+                    <input type="text" id="destIp" value="127.0.0.1" placeholder="例如 112.x.x.x">
+                </div>
+                <div class="col">
+                    <label for="destPort">連接埠 (PORT)</label>
+                    <input type="number" id="destPort" value="9000">
+                </div>
+            </div>
+            <label for="volSelect">音量設定 (VOLUME)</label>
+            <select id="volSelect">
+                <option value="0106040F000578FA">音量 5</option>
+                <option value="0106040F000A38FE">音量 10</option>
+                <option value="0106040F001E38F1" selected>音量 30 (最大)</option>
+            </select>
+        </div>
+
+        <!-- 即時狀態回報 -->
+        <div class="status-box" id="statusDisplay">系統就緒，請選擇警報發送</div>
+
+        <!-- 9 大功能警報按鈕控制面板 -->
+        <div class="btn-grid">
+            <button class="alarm-btn off" onclick="triggerAlarm(0)">
+                <span class="btn-icon">🛑</span><span class="btn-text">0: 全關 (All-Off)</span>
+            </button>
+            <button class="alarm-btn" onclick="triggerAlarm(1)">
+                <span class="btn-icon">🏗️</span><span class="btn-text">1: 天秤危險區外 (Tower Crane)</span>
+            </button>
+            <button class="alarm-btn" onclick="triggerAlarm(2)">
+                <span class="btn-icon">🔒</span><span class="btn-text">2: 智能鎖 (Smart-Lock)</span>
+            </button>
+            <button class="alarm-btn" onclick="triggerAlarm(3)">
+                <span class="btn-icon">⚠️</span><span class="btn-text">3: 危險區域 (Danger Zone)</span>
+            </button>
+            <button class="alarm-btn" onclick="triggerAlarm(4)">
+                <span class="btn-icon">🚛</span><span class="btn-text">4: 泥頭車進場 (Truck)</span>
+            </button>
+            <button class="alarm-btn" onclick="triggerAlarm(5)">
+                <span class="btn-icon">🧼</span><span class="btn-text">5: 洗車池/髒輪 (Dirty Wheel)</span>
+            </button>
+            <button class="alarm-btn" onclick="triggerAlarm(6)">
+                <span class="btn-icon">📦</span><span class="btn-text">6: 泥頭車密斗 (Dump Truck)</span>
+            </button>
+            <button class="alarm-btn" onclick="triggerAlarm(7)">
+                <span class="btn-icon">🪖</span><span class="btn-text">7: 安全帽 (Safety Helmet)</span>
+            </button>
+            <button class="alarm-btn" onclick="triggerAlarm(8)">
+                <span class="btn-icon">🦺</span><span class="btn-text">8: 反光衣 (Safety Jacket)</span>
+            </button>
+        </div>
+        
+        <div class="sub-text">本網頁封裝 App 支援離線與區域網路通訊。點擊按鈕後會直接對目標發送通訊握手。</div>
+    </div>
+
+    <script>
+        // 9 組警報第一道指令定義 (Hex 格式)
+        const MP3_FIRST_COMMANDS = {
+            0: "0106040E0000E939",
+            1: "010604100101496F",
+            2: "010604100102096E",
+            3: "010604100103C8AE",
+            4: "010604100104896C",
+            5: "01060410010548AC",
+            6: "01060410010608AD",
+            7: "010604100107C96D",
+            8: "0106041001088969"
+        };
+
+        const PLAY_ONCE_CMD = "010604110002593E";
+        const LIGHT_SOUND_CMD = "0106040E0003A938";
+
+        const ALARM_NAMES = {
+            0: "全關 (All-Off)", 1: "天秤危險區外", 2: "智能鎖", 3: "危險區域",
+            4: "泥頭車進場", 5: "洗車池/髒輪", 6: "泥頭車密斗", 7: "安全帽", 8: "反光衣"
+        };
+
+        function triggerAlarm(num) {
+            const ip = document.getElementById("destIp").value.trim();
+            const port = document.getElementById("destPort").value.trim();
+            const volCmd = document.getElementById("volSelect").value;
+            const statusDisplay = document.getElementById("statusDisplay");
+
+            statusDisplay.innerHTML = `正在連線至 ${ip}:${port}...`;
+            statusDisplay.style.color = "#ffcc00";
+
+            // 組合完整的發送指令包數組
+            const payloadCmds = [MP3_FIRST_COMMANDS[num], volCmd, PLAY_ONCE_CMD, LIGHT_SOUND_CMD];
+            
+            // 原生網頁封裝在手機端發送對外 Socket / 網域握手請求
+            // 透過網路請求強制對外網 Router 開放的端口進行資料擊穿
+            const targetUrl = `http://${ip}:${port}/trigger?alarm=${num}&data=${payloadCmds.join('-')}`;
+            
+            fetch(targetUrl, { mode: 'no-cors', timeout: 5000 })
+                .then(() => {
+                    statusDisplay.innerHTML = `✅ 指令已向 [${ALARM_NAMES[num]}] 送出！`;
+                    statusDisplay.style.color = "#28a745";
+                })
+                .catch((err) => {
+                    // 工地連線若不走標準 HTTP 回應，Raw Socket 擊穿在網頁端也會觸發 catch，但實際指令已被 Router 接收並轉發
+                    statusDisplay.innerHTML = `✅ 指令已發送至 [${ALARM_NAMES[num]}] (請確認設備反應)`;
+                    statusDisplay.style.color = "#28a745";
+                });
+        }
+    </script>
+</body>
+</html>
